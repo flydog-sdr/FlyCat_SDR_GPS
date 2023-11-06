@@ -1264,9 +1264,9 @@ function network_html()
 					w3_switch_label_get_param('id-net-ssl w3-center', 'Enable HTTPS/SSL on<br>network connections?',
 					   'Yes', 'No', 'adm.use_ssl', true, false, 'network_use_ssl_cb')
 				),
-				/*w3_switch_label('w3-center', 'Auto add NAT rule<br>on firewall / router?', 'Yes', 'No', 'adm.auto_add_nat', adm.auto_add_nat, 'network_auto_nat_cb'),
+				w3_switch_label('w3-center', 'Auto add NAT rule<br>on firewall / router?', 'Yes', 'No', 'adm.auto_add_nat', adm.auto_add_nat, 'network_auto_nat_cb'),
             w3_switch_label_get_param('w3-center', 'IP address<br>(only static IPv4 for now)',
-               'DHCP', 'Static', 'adm.ip_address.use_static', 0, false, 'network_use_static_cb'),*/
+               'DHCP', 'Static', 'adm.ip_address.use_static', 0, false, 'network_use_static_cb'),
             w3_divs('w3-center/',
                w3_select_conditional('w3-width-auto', 'Ethernet interface speed', '', 'ethernet_speed', cfg.ethernet_speed, network.ethernet_speed_s, 'network_ethernet_speed'),
                w3_div('w3-text-black', spd_s)
@@ -3558,7 +3558,7 @@ function admin_draw(sdr_mode)
          w3_nav(admin_colors[ci++], 'Public', 'sdr_hu', 'admin_nav') +
          w3_nav(admin_colors[ci++], 'DX', 'dx', 'admin_nav');
    s += 
-      //w3_nav(admin_colors[ci++], 'Update', 'update', 'admin_nav') +
+      w3_nav(admin_colors[ci++], 'Update', 'update', 'admin_nav') +
       w3_nav(admin_colors[ci++], 'Backup', 'backup', 'admin_nav') +
       w3_nav(admin_colors[ci++], 'Network', 'network', 'admin_nav') +
       (sdr_mode? w3_nav(admin_colors[ci++], 'GPS', 'gps', 'admin_nav') : '') +

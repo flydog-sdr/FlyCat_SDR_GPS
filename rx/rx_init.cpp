@@ -178,24 +178,6 @@ void update_vars_from_config(bool called_at_init)
 	    update_masked_freqs();
 	}
 
-    int srate_idx = cfg_default_int("max_freq", -1, &update_cfg);
-    switch (srate_idx) {
-        default:
-            ui_srate = 32*MHz;
-            break;
-        case 0:
-            ui_srate = 32*MHz;
-            break;
-        case 1:
-            ui_srate = 42*MHz;
-            break;
-        case 2:
-            ui_srate = 52*MHz;
-            break;
-        case 3:
-            ui_srate = 62*MHz;
-            break;
-    }
     // force DC offsets to the default value if not configured
     // also if set to the previous default value
     int firmware_sel = admcfg_default_int("firmware_sel", 0, &update_admcfg);   // needed below

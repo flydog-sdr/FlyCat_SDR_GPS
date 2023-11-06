@@ -1,9 +1,19 @@
 #pragma once
 
+#include <stdint.h>
+
 #define EE_NPINS 74
 #define	EE_PINS_OFFSET_BASE		88
 typedef struct {
-	u1_t bank, bit, pin, eeprom_off;
+	volatile uint32_t config[4];
+	volatile uint32_t data;
+	volatile uint32_t driver[2];
+	volatile uint32_t pull[2];
+} gpio_config;
+
+typedef struct {
+	u1_t pin, eeprom_off;
+	gpio_config cfg;
 } __attribute__((packed)) gpio_t;
 
 typedef struct {
@@ -19,9 +29,9 @@ typedef struct {
 
 extern pin_t eeprom_pins[EE_NPINS];
 
-// RPI 2 & 3, RPi1 is 0x20000000
-#define BCM2708_PERI_BASE        0x3F000000
-#define GPIO_BASE                (BCM2708_PERI_BASE + 0x200000) /* GPIO controller */
+#define ALLWINER_H3_PERI_BASE        0x01C20000
+#define ALLWINER_H3_PERI_PA_OFFSET   0x0800
+#define GPIO_BASE ALLWINER_H3_PERI_BASE /* GPIO controller */
 
 #define PMUX_OUT_PU 2 
 
@@ -37,15 +47,13 @@ GPIO_DIR_OUT = 1,
 GPIO_DIR_BIDIR = 2
 };
 
-#define GPIO_INPUT(io) *(gpio+((io.pin)/10)) &= ~(7<<(((io.pin)%10)*3))
-#define GPIO_OUTPUT(io) *(gpio+((io.pin)/10)) |=  (1<<(((io.pin)%10)*3))
-#define GPIO_READ_BIT(io) (*(gpio+13)&(1<<io.pin))
-#define GPIO_SET_BIT(io) *(gpio+7) = 1 << io.pin
-#define GPIO_CLR_BIT(io) *(gpio+10)= 1 << io.pin
-#define GPIO_WRITE_BIT(io, v) do{ \
-          if (v) {GPIO_SET_BIT(io);} \
-          else   {GPIO_CLR_BIT(io);} \
-        }while(0)
+u1_t GPIO_READ_BIT(gpio_t io);
+void GPIO_INPUT(gpio_t io);
+void GPIO_PULL(gpio_t io, int v);
+void GPIO_OUTPUT(gpio_t io);
+void GPIO_SET_BIT(gpio_t io);
+void GPIO_CLR_BIT(gpio_t io);
+void GPIO_WRITE_BIT(gpio_t io, int v);
 
 extern volatile unsigned *gpio;
 
@@ -67,10 +75,37 @@ void peri_init();
 void gpio_test(int gpio_test);
 void peri_free();
 
-#define FPGA_INIT_PIN 6
-#define FPGA_PGM_PIN 5
+#define FPGA_INIT_PIN 8
+#define FPGA_PGM_PIN 7
 
 #define SPIn_CS0_PIN 8
-#define SPIn_CS1_PIN 7
-#define CMD_READY_PIN 13
-#define SND_INTR_PIN 26
+#define SPIn_CS1_PIN 21
+#define CMD_READY_PIN 9
+#define SND_INTR_PIN 20
+
+const int port_a_map[22][2] = {
+    {0, 0}, // PA0
+    {0, 4}, // PA1
+    {0, 8}, // PA2
+    {0, 12}, // PA3
+    {0, 16}, // PA4
+    {0, 20}, // PA5
+    {0, 24}, // PA6
+    {0, 28}, // PA7
+
+    {1, 0}, // PA8
+    {1, 4}, // PA9
+    {1, 8}, // PA10
+    {1, 12}, // PA11
+    {1, 16}, // PA12
+    {1, 20}, // PA13
+    {1, 24}, // PA14
+    {1, 28}, // PA15
+
+    {2, 0}, // PA16
+    {2, 4}, // PA17
+    {2, 8}, // PA18
+    {2, 12}, // PA19
+    {2, 16}, // PA20
+    {2, 20}, // PA21
+};

@@ -59,7 +59,7 @@ var ITU_region_i = [ 'R1: Europe, Africa', 'R2: North & South America', 'R3: Asi
 
 var AM_BCB_chan_i = [ '9 kHz', '10 kHz' ];
 
-var max_freq_i = [ '32 MHz', '42 MHz', '52 MHz', '62 MHz' ];
+var max_freq_i = [ '30 MHz', '32 MHz' ];
 
 var SPI_clock_i = [ '48 MHz', '24 MHz' ];
 
@@ -170,11 +170,11 @@ function config_html()
 				)
 			),
 			w3_divs('w3-restart/w3-center w3-tspace-8',
-				w3_select('w3-width-auto', 'Max receiver frequency', '', 'max_freq', max_freq, max_freq_i, 'admin_select_cb')/*,
+				w3_select('w3-width-auto', 'Max receiver frequency', '', 'max_freq', max_freq, max_freq_i, 'admin_select_cb'),
 				w3_div('w3-text-black',
 				   '32 MHz necessary for some downconverters. But note <br>' +
 				   'there will be more spurs in the 30-32 MHz range.'
-				)*/
+				)
 			),
 			w3_div('',
             w3_checkbox_get_param('//w3-label-inline', 'Show 1 Hz frequency resolution', 'show_1Hz', 'admin_bool_cb', true),

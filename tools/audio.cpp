@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <math.h>
 
-//#define ADC_CLOCK 125000000    // 125.0000
-#define ADC_CLOCK 125000000    // 125.0000
-//#define ADC_CLOCK 124999900    // 124.9999
+//#define ADC_CLOCK 66660000    // 66.66
+#define ADC_CLOCK 66666600    // 66.6666
+//#define ADC_CLOCK 66665900    // 66.6659
 
 // action
 //#define ACTION_FIND_DECIM12_EXACT

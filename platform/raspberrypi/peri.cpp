@@ -16,6 +16,7 @@
 
 static bool init;
 volatile unsigned *gpio;
+gpio_config* pa;
 
 //extern gpio_t GPIO_NONE;
 gpio_t FPGA_INIT, FPGA_PGM;
@@ -26,8 +27,6 @@ gpio_t CMD_READY, SND_INTR;
 pin_t eeprom_pins[EE_NPINS];
 
 #define MMAP_SIZE 0x1000
-#define GPIO_PULL *(gpio+37) // Pull up/pull down
-#define GPIO_PULLCLK0 *(gpio+38) // Pull up/pull down clock
 
 void _gpio_setup(const char *name, gpio_t g, gpio_dir_e dir, u4_t initial, u4_t pmux_val1, u4_t pmux_val2)
 {
@@ -41,7 +40,6 @@ void _gpio_setup(const char *name, gpio_t g, gpio_dir_e dir, u4_t initial, u4_t 
                     GPIO_BANK(gpio), gpio.bit, (gpio.pin & P9)? "P9":"P8", gpio.pin & PIN_BITS, name,
                     (dir == GPIO_DIR_OUT)? "OUTPUT":"BIDIR", initial);
 			#endif
-			GPIO_WRITE_BIT(g, initial);
 			GPIO_OUTPUT(g);
 			GPIO_WRITE_BIT(g, initial);
 		} else {
@@ -52,23 +50,21 @@ void _gpio_setup(const char *name, gpio_t g, gpio_dir_e dir, u4_t initial, u4_t 
 	}
 
 	// setup pull-up or down
-	GPIO_PULL = 1 << g.pin;
+	GPIO_PULL(g, 0x01);
 	spin_ms(1);
-	GPIO_PULLCLK0 = 1 << g.pin;
-	spin_ms(1);
-	GPIO_PULL = 0;
-	GPIO_PULLCLK0 = 0;
+	GPIO_PULL(g, 0x00);
 
 	spin_ms(10);
 }
 
 void peri_init()
 {
-    int i, mem_fd;
+    int mem_fd = open("/dev/mem", O_RDWR|O_SYNC);
+    if (mem_fd < 0) {
+        sys_panic("/dev/mem");
+    }
 
-    scall("/dev/gpiomem", mem_fd = open("/dev/gpiomem", O_RDWR|O_SYNC));
-
-    gpio = (volatile unsigned *) mmap(
+    char *pa_base = (char *) mmap(
         NULL,
         MMAP_SIZE,
         PROT_READ|PROT_WRITE,
@@ -76,19 +72,19 @@ void peri_init()
         mem_fd,
         GPIO_BASE
     );
-    if (gpio == MAP_FAILED) sys_panic("mmap gpio");
+    if (pa_base == MAP_FAILED) sys_panic("mmap gpio");
 
+    gpio = (volatile unsigned*)pa_base;
+    pa = (gpio_config*)&pa_base[ALLWINER_H3_PERI_PA_OFFSET];
     close(mem_fd);
 
     FPGA_INIT.pin = FPGA_INIT_PIN;
     FPGA_PGM.pin = FPGA_PGM_PIN;
 
-    SPIn_CS0.pin = SPIn_CS0_PIN;
     SPIn_CS1.pin = SPIn_CS1_PIN;
     CMD_READY.pin = CMD_READY_PIN;
     SND_INTR.pin = SND_INTR_PIN;
 
-    gpio_setup(SPIn_CS0, GPIO_DIR_OUT, 1, PMUX_OUT_PU, PMUX_IO_PD);
     gpio_setup(SPIn_CS1, GPIO_DIR_OUT, 1, PMUX_OUT_PU, PMUX_IO_PD);
     gpio_setup(CMD_READY, GPIO_DIR_BIDIR, GPIO_HIZ, PMUX_IO_PDIS, PMUX_IO_PDIS);
     gpio_setup(SND_INTR, GPIO_DIR_BIDIR, GPIO_HIZ, PMUX_IO_PDIS, PMUX_IO_PDIS);
@@ -103,4 +99,49 @@ void peri_free()
 {
     assert(init);
     munmap((void *) gpio, MMAP_SIZE);
+}
+
+u1_t GPIO_READ_BIT(gpio_t io) {
+    int reg = port_a_map[io.pin][0];
+    int bit = port_a_map[io.pin][1];
+    pa->config[reg] &= ~(0x0F << bit);
+    return (pa->data >> io.pin) & 0x01;
+}
+
+void GPIO_INPUT(gpio_t io) {
+    int reg = port_a_map[io.pin][0];
+    int bit = port_a_map[io.pin][1];
+    pa->config[reg] &= ~(0x0F << bit);
+    pa->config[reg] |= (GPIO_DIR_IN << bit);
+}
+
+void GPIO_PULL(gpio_t io, int v) {
+    int pin = io.pin;
+    int reg = pin / 16;
+    int bit = (pin % 16) * 2;
+    pa->pull[reg] &= ~(0x03 << bit);
+    pa->pull[reg] |= (uint32_t)v << bit;
+}
+
+void GPIO_OUTPUT(gpio_t io) {
+    int reg = port_a_map[io.pin][0];
+    int bit = port_a_map[io.pin][1];
+    pa->config[reg] &= ~(0x0F << bit);
+    pa->config[reg] |= (GPIO_DIR_OUT << bit);
+}
+
+void GPIO_SET_BIT(gpio_t io) {
+    pa->data |= (1 << io.pin);
+}
+
+void GPIO_CLR_BIT(gpio_t io) {
+    pa->data &= ~(1 << io.pin);
+}
+
+void GPIO_WRITE_BIT(gpio_t io, int v) {
+    if (v) {
+        GPIO_SET_BIT(io);
+    } else {
+        GPIO_CLR_BIT(io);
+    }
 }

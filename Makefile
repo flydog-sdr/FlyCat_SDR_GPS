@@ -36,8 +36,8 @@ include Makefile.comp.inc
 # for any config-specific options/dependencies
 -include ../kiwi.config/Makefile.kiwi.inc
 
-REPO_USER := bclswl0827
-REPO_NAME := FlyDog_SDR_GPS
+REPO_USER := flydog-sdr
+REPO_NAME := FlyCat_SDR_GPS
 REPO_GIT  := $(REPO_USER)/$(REPO_NAME).git
 REPO := https://github.com/$(REPO_GIT)
 
@@ -373,10 +373,10 @@ $(INSTALL_CERTIFICATES):
 	-apt-get -y $(APT_GET_FORCE) install htop
 
 /usr/sbin/avahi-autoipd:
-	#-apt-get -y $(APT_GET_FORCE) install avahi-daemon avahi-utils libnss-mdns avahi-autoipd
+	-apt-get -y $(APT_GET_FORCE) install avahi-daemon avahi-utils libnss-mdns avahi-autoipd
 
 /usr/bin/upnpc:
-	#-apt-get -y $(APT_GET_FORCE) install miniupnpc
+	-apt-get -y $(APT_GET_FORCE) install miniupnpc
 
 /usr/bin/dig:
 	-apt-get -y $(APT_GET_FORCE) install dnsutils
@@ -385,7 +385,7 @@ $(INSTALL_CERTIFICATES):
 	-apt-get -y $(APT_GET_FORCE) install netpbm
 
 /sbin/ethtool:
-	#-apt-get -y $(APT_GET_FORCE) install ethtool
+	-apt-get -y $(APT_GET_FORCE) install ethtool
 
 /usr/bin/sshpass:
 	-apt-get -y $(APT_GET_FORCE) install sshpass
@@ -401,17 +401,17 @@ ifeq ($(DEBIAN_10_AND_LATER),true)
 	-apt-get -y install openssl libssl1.1 libssl-dev
 
 /usr/bin/connmanctl:
-	#-apt-get -y $(APT_GET_FORCE) install connman
+	-apt-get -y $(APT_GET_FORCE) install connman
 endif
 
 ifeq ($(BBAI_64),true)
 /usr/bin/cpufreq-info:
-	#-apt-get -y install cpufrequtils
+	-apt-get -y install cpufrequtils
 endif
 
 ifeq ($(BBAI),true)
 /usr/bin/cpufreq-info:
-	#-apt-get -y install cpufrequtils
+	-apt-get -y install cpufrequtils
 endif
 
 ifneq ($(DEBIAN_VERSION),7)
@@ -1194,7 +1194,7 @@ ifeq ($(DEBIAN_DEVSYS),$(DEBIAN))
     EXISTS_DX_COMM_CFG := $(shell test -f $(DIR_CFG)/$(DX_COMM_CFG) && echo true)
 endif
 
-ETC_HOSTS_HAS_KIWI := $(shell grep -qi kiwisdr /etc/hosts && echo true)
+ETC_HOSTS_HAS_KIWI := $(shell grep -qi kiwisdr /dev/null && echo true)
 
 SSH_KEYS = /root/.ssh/authorized_keys
 EXISTS_SSH_KEYS := $(shell test -f $(SSH_KEYS) && echo true)
@@ -1303,8 +1303,6 @@ endif
 #
 	rsync -av --delete $(DIR_CFG_SRC)/samples/ $(DIR_CFG)/samples
 	install -D -o root -g root tools/backup_sdr_config.sh /usr/local/bin/backup_sdr_config.sh
-	cat Makefile | head -2 | cut -d " " -f3 | tr -d "\n" > $(DIR_CFG)/_VER
-	install -D -o root -g root -m 0644 $(DIR_CFG_SRC)/_UPDATE $(DIR_CFG)/_UPDATE
 
 # only install post-customized config files if they've never existed before
 ifneq ($(EXISTS_BASHRC_LOCAL),true)
@@ -1360,8 +1358,8 @@ ifneq ($(EXISTS_CONFIG),true)
 endif
 
 ifneq ($(ETC_HOSTS_HAS_KIWI),true)
-	@echo "\nAPPENDING kiwisdr to /etc/hosts"
-	@echo '127.0.0.1       kiwisdr' >>/etc/hosts
+	@echo "\nAPPENDING kiwisdr to /dev/null"
+	@echo '127.0.0.1       kiwisdr' >>/dev/null
 endif
 
 	#@echo
