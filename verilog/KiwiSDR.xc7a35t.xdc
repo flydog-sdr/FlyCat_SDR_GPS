@@ -110,8 +110,9 @@ set_property PACKAGE_PIN P1 [get_ports EWP]
 
 # outputs
 set_property DRIVE 4 [all_outputs]
-set_property OFFCHIP_TERM NONE [all_outputs]
+set_property SLEW SLOW [all_outputs]
 #set_property SLEW FAST [get_ports BBB_MISO]
+set_property OFFCHIP_TERM NONE [all_outputs]
 
 # in Vivado for power analysis only
 set_load 6.000 [all_outputs]
