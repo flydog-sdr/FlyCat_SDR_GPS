@@ -2,6 +2,73 @@ CHANGE_LOG
 
 For the Github commit log see here: github.com/flydog-sdr/FlyCat_SDR_GPS/commits/master
 
+v1.651,652,653  January 6, 2024
+    Possible fix for TDoA problem.
+
+v1.650  January 4, 2024
+    Changed CIC compensation filter gain correction based on better measurements (+3 => +4.5 dB).
+    S-meter now shows 1/10 dB digit when value > -100 dBm.
+    Sig gen extension attenuation offset is now an independent value saved in browser storage.
+
+v1.647,648,649  January 2, 2024
+    Finally fixed the long-standing problem with adjacent channel aliasing into the passband.
+    Fixed with Christoph's addition of FPGA CIC compensation filtering which you can read about here:
+    hcab14.blogspot.com/2024/01/kiwisdr-gets-cic-compensating-filters.html
+    See Kiwi forum for further discussion.
+    
+    If non-zero RF attenuator value shown in S-meter as a reminder.
+    Updated HFDL system table to version 52.
+
+v1.646  December 13, 2023
+    Fix DRM Journaline bug.
+
+v1.644,645  December 12, 2023
+    Fix memory leak.
+
+v1.641,642,643  December 6, 2023
+    DRM: Fix for audio high-frequency aliasing artifacts.
+
+v1.640  December 2, 2023
+    Fixed problem with Galileo sats receiving newer subframe types incorrectly showing errors.
+    Changes to support KiwiSDR 2.
+
+v1.639  November 26, 2023
+    New frequency memory menu user interface:
+        Auto or manual save mode.
+        Click-hold of memory icon does save in manual save mode.
+        Optional save/restore of demod mode.
+        Memory recall shortcut keys: ^1 ^2 ... ^9
+        Click-hold of VFO A/B icon does VFO A=B.
+        Help panel.
+
+v1.637,638  November 22, 2023
+    Frequency memory:
+        Items are now stored in the memory only on demand instead of automatically while tuning.
+        The current frequency is stored in the frequency memory when:
+            1) The "store" entry at the top of the memory menu is clicked.
+            2) Or the freq memory icon (3 horizontal lines) is click-held for more than one second.
+                (it will turn green when the store occurs)
+        The "clear all" entry leaves only the current frequency in the memory.
+    
+    FT8 extension:
+        Now decodes the DXpedition and Contest message formats.
+        Shows the "i3.n3" message format type under "msg" column.
+        Fixed some decoding bugs.
+
+    Waterfall tuning/zooming now resets the inactivity timer. For example if you're recording you
+    can reset the inactivity timer without having to change the frequency or mode.
+    
+    Admin DX tab: Prevent corruption when frequency entered in not in sorted order.
+
+v1.635,636  November 15, 2023
+    Support MMSSTV modes: MR73 MR90 MR115 MR140 MR175 MP73 MP115 MP140 MP175
+    Changes to support KiwiSDR 2.
+
+v1.634  November 8, 2023
+    Fixed timing bug sometimes causing page reload failure when community dx labels selected.
+    Update RF attenuator slider when changed by other connections.
+        Note that admin-selectable adjustment policies are still not implemented yet.
+
 v1.633  November 5, 2023
     Adjusting waterfall cal on the admin config tab now has immediate effect, like S-meter cal has.
     "set from GPS" buttons added to admin webpage tab and extensions FT8 subtab.
@@ -392,9 +459,6 @@ v1.602  Jun 3, 2023
         NBFM squelch fixed. Squelch should now close at a more reasonable slider setting.
         Admin console column width now scales with window width.
         Fixed problem with SPI device name for systems using latest BBAI-64 update.
-
-v1.6011,6012  May 24, 2023
-    Report to kiwisdr.com only when "Register on rx.kiwisdr.com" is enabled.
 
 v1.601  Apr 25, 2023
     Admin page:
@@ -1305,15 +1369,9 @@ v1.488  January 29, 2022
     Admin > Extensions > {ALE_2G, HFDL} "user enable" switch now works.
     Added US DEA to ALE 2G scan list (thanks Bob W).
 
-v1.4871  January 28, 2022
-    Reverse proxy: Always use 80 port instead of 8073.
-
 v1.487  January 27, 2022
     Debian 10: Use connmanctl to change Ethernet ip address mode instead of editing the file
         /etc/network/interfaces and rebooting as is done with Debian 8 & 9.
-
-v1.4861  January 26, 2022
-    Admin page: Fixed bug coordinates unable to change.
 
 v1.486  January 18, 2022
     Support for Debian 10 (Buster) on BBG/BBB.
@@ -1607,26 +1665,11 @@ v1.462,463  September 10, 2021
             Continuing changes to allow Kiwi to be used as a general FPGA development platform.
             Many fewer warning messages now from Vivado when building the Kiwi Verilog code.
 
-v1.4613  July 23, 2021
-    Fixed audio bursting when the signal is overloaded.
-
-v1.4612  July 22, 2021
-    Removed the FAX extension.
-    Minor fixes on ADC clock.
-
-v1.4611  July 17, 2021
-    Disable Console tab in admin page in order to prevent being used for malicious intrusion.
-        Read this post: https://arstechnica.com/gadgets/2021/07/for-years-a-backdoor-in-popular-kiwisdr-product-gave-root-to-project-developer/
-
 v1.461  July 15, 2021
     Bug fixes:
         MW 9/10 kHz step applies up to 1710 kHz regardless of selected ITU mode.
         Default frequency step restored to 5 kHz.
         Mode selection allowed during recording except those that would change mono/stereo condition.
-
-v1.4601  July 12, 2021
-    Minor improvements on Backup tab and backup script.
-    Ready for Manufacturing interface.
 
 v1.460  May 24, 2021
     Fix needed by the KiwiSDR Android app (from the Google Play store).
@@ -1674,10 +1717,6 @@ v1.455,456  May 19, 2021
 
     Changes to more easily support general (even non-SDR) FPGA development.
 
-v1.4541  May 25, 2021
-    Added "Backup" tab in administration with specialised configuration backup script.
-    Added "Prevent multiple connections from the same IP address?" switcher.
-
 v1.453,454  May 14, 2021
     Added default passband adjustment to admin page, config tab.
         As each passband parameter field is changed (low, high, center, width) the other
@@ -1694,14 +1733,6 @@ v1.453,454  May 14, 2021
 
 v1.452  May 4, 2021
     Improvements to API to prevent abuse of disabled DRM mode.
-
-v1.4512  April 16, 2021
-    Enable poweroff/restart in administration.
-        Commands such as poweroff, reboot are not allowed in container, use magic SysRq key instead.
-            See documentation: https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html#how-do-i-use-the-magic-sysrq-key
-
-v1.4511  April 15, 2021
-    CW(N) offest was fixed.
 
 v1.451  April 13, 2021
     Admin log tab:
@@ -1923,32 +1954,9 @@ v1.430  January 30, 2021
     Make de-emphasis option simply on/off since we've been unable to figure out why
         the 75/50 usec filter coefficient code doesn't work anymore.
 
-v1.4293  January 28, 2021
-    Adjusted Docker entrypoint of FlyDog SDR.
-
-v1.4292  January 24, 2021
-    With --no-install-recommends option for dependencies installation during compiling.
-    Adjusted the compilation flags.
-
-v1.4291  January 23, 2021
-    Followed up the upstream.
-        https://github.com/jks-prv/Beagle_SDR_GPS
-
 v1.429  January 16, 2021
     FAX: added Vanino Radio 6455 to Asia menu per forum user Fabrys.
     By request: add value 1400 to MTU menu on admin page network tab.
-
-v1.4283  January 21, 2021
-    Fixed an issue where FAX could not be decoded.
-        See issue: https://github.com/flydog-sdr/FlyDog_SDR_GPS/issues/5
-
-v1.4282  January 16, 2021
-    Removed unnecessary dependencies.
-    Enhanced the reliability of Frp connection. For some Chinese users, Frp is often dropped during use.
-
-v1.4281  December 26, 2020
-    Removed functions that are not compatible with Raspberry Pi.
-    Minimise the corresponding container.
 
 v1.428  December 17, 2020
     Reliability fixes.
