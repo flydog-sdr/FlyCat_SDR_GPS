@@ -40,6 +40,7 @@ void _gpio_setup(const char *name, gpio_t g, gpio_dir_e dir, u4_t initial, u4_t 
                     GPIO_BANK(gpio), gpio.bit, (gpio.pin & P9)? "P9":"P8", gpio.pin & PIN_BITS, name,
                     (dir == GPIO_DIR_OUT)? "OUTPUT":"BIDIR", initial);
 			#endif
+			GPIO_WRITE_BIT(g, initial);
 			GPIO_OUTPUT(g);
 			GPIO_WRITE_BIT(g, initial);
 		} else {
